@@ -6,26 +6,48 @@
   <style type="text/css" media="screen">
     body {
         overflow: hidden;
+        margin: 0;
+    }
+
+    main {
+        display: flex;
+        flex-direction: row;
+        margin: 0;
+    }
+    
+    canvas {
+        width: 50vw;
+        height: 65vh;
     }
 
     #editor {
         margin: 0;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        width: 50vw;
+        height: 100vh;
     }
   </style>
+  <script type="module">
+    import { Canvas } from "./build/render.js";
+    var CANVAS;
+    window.onload = () => {
+        CANVAS = new Canvas(document.getElementsByTagName("canvas").item(0));
+        console.log(CANVAS);
+    }
+  </script>
 </head>
 <body>
 
-<pre id="editor">function foo(items) {
-    var i;
-    for (i = 0; i &lt; items.length; i++) {
-        alert("Ace Rocks " + items[i]);
-    }
-}</pre>
+<main>
+    <pre id="editor">function foo(items) {
+        var i;
+        for (i = 0; i &lt; items.length; i++) {
+            alert("Ace Rocks " + items[i]);
+        }
+    }</pre>
+    
+    <canvas></canvas>
+    
+</main>
 
 <script src="node_modules/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script>
