@@ -6,7 +6,7 @@
     "scripts": {
         "build": "babel src --out-dir build --extensions \".ts\"",
         "typecheck": "tsc",
-        "start": "htttp-server .",
+        "start": "http-server .",
         "go": "npm run build && npm run start"
     },
     "repository": {
