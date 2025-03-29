@@ -6,7 +6,7 @@
     "scripts": {
         "build": "babel src --out-dir build --extensions \".ts\"",
         "typecheck": "tsc",
-        "start": "http-server .",
+        "start": "http-server --cors enabled .",
         "go": "npm run build && npm run start"
     },
     "repository": {
