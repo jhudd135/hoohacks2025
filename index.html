@@ -28,10 +28,12 @@
   </style>
   <script type="module">
     import { Canvas } from "./build/render.js";
+    import { initControls } from "./build/controls.js"
     var CANVAS;
     window.onload = () => {
         CANVAS = new Canvas(document.getElementsByTagName("canvas").item(0));
         console.log(CANVAS);
+        initControls();
     }
   </script>
 </head>
@@ -45,7 +47,7 @@
         }
     }</pre>
     
-    <canvas></canvas>
+    <canvas tabindex="0"></canvas>
     
 </main>
 
