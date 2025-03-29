@@ -21,5 +21,8 @@
         "@types/node": "^22.10.2",
         "http-server": "^14.1.1",
         "typescript": "^5.7.2"
+    },
+    "dependencies": {
+        "ace-builds": "^1.39.1"
     }
 }
