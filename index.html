@@ -86,16 +86,17 @@
   </style>
   <script type="module">
     import { Canvas } from "./build/render.js";
-    import { initControls } from "./build/controls.js"
+    import { initControls } from "./build/controls.js";
+    import { testVisualize } from "./build/visualize.js";
     import { preprocess } from "./build/preprocessing.js"
     import { submit } from "./build/submit.js"
     import { setConsoleText } from "./build/console.js"
     var CANVAS;
     var states = [];
     window.onload = () => {
-        CANVAS = new Canvas(document.getElementsByTagName("canvas").item(0));
-        console.log(CANVAS);
-        initControls();
+        const camera = initControls();
+        camera.image = testVisualize();
+        camera.draw();
         //document.getElementById("targetFrame").contentWindow.postMessage((preprocess("let x = 5;\nlet y = 10;\n", ["x", "y"])), "*");
         window.addEventListener('message', event => {
             states.push(event.data);

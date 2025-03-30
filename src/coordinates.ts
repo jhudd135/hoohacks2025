@@ -37,6 +37,13 @@ export class Cartesian {
     eq(other: Cartesian): boolean {
         return this.x === other.x && this.y === other.y;
     }
+    scale(xscl: number, yscl: number = null): Cartesian {
+        if (yscl == null) {
+            return new Cartesian(this.x * xscl, this.y * xscl);
+        } else {
+            return new Cartesian(this.x * xscl, this.y * yscl);
+        }
+    }
 }
 export class Polar {
     angle: number;

@@ -78,12 +78,21 @@ export class Canvas {
     drawCircle(center: [number, number], radius: number, stroke: string = "black", width: number = 1): void {
         this.drawArc(center, radius, 0, 2 * Math.PI, stroke, width);
     }
-    drawText(point: [number, number], text: string, font: string = "10px Arial"): void {
+    drawText(point: [number, number], text: string, font: string = "10px Arial", rotation = null): void {
         const ctx = this.context;
         if (font) {
             ctx.font = font;
         }
-        ctx.fillText(text, point[0], point[1]);
+        if (rotation != null) {
+            ctx.save();
+            ctx.translate(point[0], point[1]);
+            ctx.rotate(rotation);
+            ctx.fillText(text, 0, 0);
+            ctx.restore();
+        } else {
+            ctx.fillText(text, point[0], point[1]);
+        }
+        
     }
     borderCanvas(): void {
         this.drawRect([0, 0], [this.width, this.height], "black", 2);
