@@ -95,9 +95,9 @@
     import { Canvas } from "./build/render.js";
     import { initControls } from "./build/controls.js";
     import { testVisualize } from "./build/visualize.js";
-    import { preprocess } from "./build/preprocessing.js"
-    import { submit } from "./build/submit.js"
-    import { setConsoleText } from "./build/console.js"
+    import { preprocess } from "./build/preprocessing.js";
+    import { submit } from "./build/submit.js";
+    import { setConsoleText } from "./build/console.js";
     var CANVAS;
     var states = [];
     window.onload = () => {
@@ -119,7 +119,7 @@
         });
 
         document.getElementById("actionButton").onclick = () => {
-            submit(editor.getValue(), document.getElementById("targetFrame").contentWindow, ["foo", "bar"]);
+            submit(editor.getValue(), document.getElementById("targetFrame").contentWindow, []);
             states = [];
             stateNumber = -1;
             if (currentHighlighter !== null) {

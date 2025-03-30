@@ -6,12 +6,12 @@
     <script>
         var mainWindow;
         console.defaultLog = console.log;
-         var reallyCoolConsoleLogs = [];
+        var reallyCoolConsoleLogs = [];
         window.onload = () => {
             console.log = function() {
-            console.defaultLog.apply(console, arguments);
-            reallyCoolConsoleLogs.push(Array.from(arguments));
-        }
+                console.defaultLog.apply(console, arguments);
+                reallyCoolConsoleLogs.push(Array.from(arguments));
+            };
         };
         window.addEventListener('message', event => {
             mainWindow = event.source;
