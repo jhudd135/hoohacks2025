@@ -53,5 +53,9 @@ export function preprocess(code: string, tracker: string[]): string {
     }
     `;
 
+    let finalCall: string = `
+    mainWindow.postMessage("done");
+    `
+
     return funcDef + lines.join("\n");
 }
