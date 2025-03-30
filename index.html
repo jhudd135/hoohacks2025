@@ -101,7 +101,7 @@
   <script type="module">
     import { Canvas } from "./build/render.js";
     import { initControls } from "./build/controls.js";
-    import { testVisualize } from "./build/visualize.js";
+    import { testVisualize, setupVisualize, drawState } from "./build/visualize.js";
     import { preprocess } from "./build/preprocessing.js";
     import { submit } from "./build/submit.js";
     import { setConsoleText } from "./build/console.js";
@@ -126,13 +126,14 @@
         });
 
         document.getElementById("actionButton").onclick = () => {
-            let trackers = document.getElementById("trackers").value.split(",");
+            let trackers = document.getElementById("trackers").value.split(",").map(tr => tr.trim());
             submit(editor.getValue(), document.getElementById("targetFrame").contentWindow, trackers);
             states = [];
             stateNumber = -1;
             if (currentHighlighter !== null) {
                 editor.session.removeMarker(currentHighlighter);
             }
+            setupVisualize(trackers, states);
         };
 
         document.getElementById("backward").onclick = () => {
@@ -144,6 +145,7 @@
                         editor.session.removeMarker(currentHighlighter);
                     }
                     currentHighlighter = editor.session.addMarker(new Range(states[stateNumber].funkyCoolLineNumber-1,0,states[stateNumber].funkyCoolLineNumber-1, 1), "myMarker", "fullLine");
+                    drawState(stateNumber, camera);
                 }
             }
         };
@@ -157,6 +159,7 @@
                     editor.session.removeMarker(currentHighlighter);
                 }
                 currentHighlighter = editor.session.addMarker(new Range(states[stateNumber].funkyCoolLineNumber-1,0,states[stateNumber].funkyCoolLineNumber-1, 1), "myMarker", "fullLine");
+                drawState(stateNumber, camera);
             }
             }
         }

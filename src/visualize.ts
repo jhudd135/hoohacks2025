@@ -1,4 +1,4 @@
-import { Drawable, Circle, Arrow, DText } from "./camera.ts";
+import { Drawable, Circle, Arrow, DText, Camera } from "./camera.ts";
 import { Cartesian, Polar } from "./coordinates.ts";
 
 const trackingMap: Map<any, { name: string, location: Cartesian }> = new Map();
@@ -15,21 +15,21 @@ function getInitialPlacements(tracked: string[], states: Object[]): Map<string, 
             if (entry[1] instanceof Object) {
                 const drawables = visualize(entry[1], new Cartesian(0, 0), new Set());
                 const box = boundingBox(drawables);
-                console.log("gIP forfor drawables", drawables, "box", box);
+                // console.log("gIP forfor drawables", drawables, "box", box);
                 boundingStates.get(entry[0]).push(new Arrow(box[0],  box[1]));
             } else {
                 boundingStates.get(entry[0]).push(new Circle(new Cartesian(0, 0), 0));
             }
         }
     }
-    console.log("gIP boundingStates", boundingStates);
+    // console.log("gIP boundingStates", boundingStates);
     const trackedBounds = new Map(Array.from(boundingStates.entries()).map(entry => [entry[0], boundingBox(entry[1])]));
-    console.log("gIP trackedBounds", trackedBounds);
+    // console.log("gIP trackedBounds", trackedBounds);
     const trackedStarts: Map<string, Cartesian> = new Map();
     let currentStart = new Cartesian(0, 0);
     for (let entry of trackedBounds) {
         trackedStarts.set(entry[0], currentStart);
-        console.log("gIP", entry[0]);
+        // console.log("gIP", entry[0]);
         currentStart = currentStart.transform(0, entry[1][1].y - entry[1][0].y + DISTANCE);
     }
     return trackedStarts;
@@ -114,6 +114,14 @@ function testObj() {
     return thingy;
 }
 
+function testObj2() {
+    let foo = {};
+    let bar = {};
+    foo["bar"] = bar;
+    let foobar = {};
+    bar["foobar"] = foobar;
+}
+
 function topVisualize(topObj: Object, fullySpacedStarts: Map<string, Cartesian>) {
     // {a: 1, b: "hello", c: {d: {}, e: {}}}
     const result: Drawable[] = [];
@@ -138,4 +146,19 @@ export function testVisualize() {
     const fss = getInitialPlacements(tracked, states);
     console.log("fss", fss);
     return topVisualize(states[0], fss);
+}
+
+let visualizations: Drawable[][];
+
+export function setupVisualize(tracked: string[], states: Object[]) {
+    const prunedStates = states.map(state => Object.fromEntries(Object.entries(state).filter(entry => tracked.includes(entry[0]))));
+    const fullySpacedStarts = getInitialPlacements(tracked, prunedStates);
+    prunedStates.forEach((state, i) => {
+        visualizations.push(topVisualize(state, fullySpacedStarts));
+    });
+}
+
+export function drawState(stateNumber: number, camera: Camera) {
+    camera.image = visualizations[stateNumber];
+    camera.draw();
 }

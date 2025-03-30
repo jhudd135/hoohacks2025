@@ -36,7 +36,7 @@ export class DText implements Drawable {
 }
 
 
-class Camera {
+export class Camera {
     position: Cartesian;
     zoom: number;
     apertureAngles: [number, number];
