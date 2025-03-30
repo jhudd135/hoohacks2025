@@ -29,7 +29,7 @@
     }
 
     #editor {
-        grid-row: 2/4;
+        grid-row: 2;
         grid-column: 1;
         margin: 0;
     }
@@ -66,7 +66,7 @@
 
     .consoleOutput {
         grid-row: 3;
-        grid-column: 2;
+        grid-column: 1;
         background: black;
         color: lime;
         font-family: monospace;
@@ -96,6 +96,11 @@
         color: rgba(255, 255, 255, 1);
         font-family: monospace;
         border: none;
+    }
+
+    .primitives {
+        grid-row: 3;
+        grid-column: 2;
     }
   </style>
   <script type="module">
@@ -127,7 +132,7 @@
 
         window.addEventListener('message', event => {
             if (event.data === "done") {
-                setupVisualize(trackers, states);
+                setupVisualize(trackers, states, document.getElementById("primitives"));
                 setConsoleText(["Use the next button to start stepping throught the code execution!"]);
             } else {
                 states.push(event.data);
@@ -199,6 +204,8 @@ bar[foobar] = foobar;
         <canvas tabindex="0"></canvas>
     
         <div class="consoleOutput" id="consoleOutput"></div>
+
+        <div class="primitives" id="primitives"></div>
     </div>
     
 </main>
