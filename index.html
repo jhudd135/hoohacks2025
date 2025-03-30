@@ -29,7 +29,7 @@
     }
 
     #editor {
-        grid-row: 2 / 4;
+        grid-row: 2/4;
         grid-column: 1;
         margin: 0;
     }
@@ -90,6 +90,13 @@
         background: rgba(255, 255, 0, 0.603); /* Yellow highlight */
         z-index: 4;
     }
+
+    .trackers {
+        background:rgba(92, 92, 92, 0.603);
+        color: rgba(255, 255, 255, 1);
+        font-family: monospace;
+        border: none;
+    }
   </style>
   <script type="module">
     import { Canvas } from "./build/render.js";
@@ -119,7 +126,8 @@
         });
 
         document.getElementById("actionButton").onclick = () => {
-            submit(editor.getValue(), document.getElementById("targetFrame").contentWindow, []);
+            let trackers = document.getElementById("trackers").value.split(",");
+            submit(editor.getValue(), document.getElementById("targetFrame").contentWindow, trackers);
             states = [];
             stateNumber = -1;
             if (currentHighlighter !== null) {
@@ -161,6 +169,7 @@
     <div class="container">
         <header class="header">
             <h2>Dissector</h2>
+            <input type="text" class="trackers" id="trackers" size="40" placeholder="Put trackers here">
             <button class="nav-button" id="actionButton">debug</button>
             <button class="nav-button" id="backward">◀ Back</button>
             <!-- <img src="logo.png" alt="Website Logo" class="logo"> -->
