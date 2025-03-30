@@ -8,6 +8,28 @@ const SCALE = 10;
 const DISTANCE = 10 * SCALE;
 const RADIUS = 2.5 * SCALE;
 
+function getInitialPlacements(tracked: string[], states: Object[]): Map<string, Cartesian> {
+    const boudingStates: Map<string, Drawable[]> = new Map(tracked.map(s => [s, []]));
+    for (let state of states) {
+        for (let entry of Object.entries(state)) {
+            if (entry[1] instanceof Object) {
+                const box = boundingBox(visualize(entry[1], new Cartesian(0, 0), new Set()));
+                boudingStates.get(entry[0]).push(new Arrow(box[0],  box[1]));
+            } else {
+                boudingStates.get(entry[0]).push(new Circle(new Cartesian(0, 0), 0));
+            }
+        }
+    }
+    const trackedBounds = new Map(Array.from(boudingStates.entries()).map(entry => [entry[0], boundingBox(entry[1])]));
+    const trackedStarts: Map<string, Cartesian> = new Map();
+    let currentStart = new Cartesian(0, 0);
+    for (let entry of trackedBounds) {
+        trackedStarts.set(entry[0], currentStart);
+        currentStart = currentStart.transform(0, entry[1][1].y - entry[1][0].y + DISTANCE);
+    }
+    return trackedStarts;
+}
+
 function boundingBox(items: Drawable[]): [Cartesian, Cartesian] {
     if (!items) {
         return null;
@@ -66,9 +88,6 @@ function visualize(obj: Object, start: Cartesian, seen: Set<Object>): Drawable[]
             const drawables = visualize(entry[1], nextStart, seen);
             const box = boundingBox(drawables);
             nextStart = new Cartesian(nextStart.x, (!box ? 0 : box[1].y) + DISTANCE);
-            if (entry[0] === "d") {
-                console.log("dbox", box, "dnstart", nextStart);
-            }
             result.push(...drawables);
         }
     });
@@ -89,20 +108,27 @@ function testObj() {
     return thingy;
 }
 
-export function testVisualize() {
+function topVisualize(topObj: Object, fullySpacedStarts: Map<string, Cartesian>) {
     // {a: 1, b: "hello", c: {d: {}, e: {}}}
     const result: Drawable[] = [];
-    let start = new Cartesian(0, 0);
+    // let start = new Cartesian(0, 0);
     const seen: Set<Object> = new Set()
-    for (let item of Object.entries({bewc: testObj(), hudd: {a: 1, b: "hello", c: {d: {}, e: {}}}})) {
+    for (let item of Object.entries(topObj)) {
         if (item[1] as Object instanceof Object) {
+            const start = fullySpacedStarts.get(item[0]);
             result.push(new DText(start.transform(-RADIUS + SCALE, 0), item[0]));
             const drawables = visualize(item[1], start, seen);
             const box = boundingBox(drawables);
-            start = new Cartesian(0, (!box ? 0 : box[1].y) + DISTANCE);
+            // start = new Cartesian(0, (!box ? 0 : box[1].y) + DISTANCE);
             result.push(...drawables);
         }
     }
-    console.log(result);
     return result;
+}
+
+export function testVisualize() {
+    const states = [{bewc: testObj(), hudd: {a: 1, b: "hello", c: {d: {}, e: {}}}}];
+    const tracked = ["bewc", "hudd"];
+    const fss = getInitialPlacements(tracked, states);
+    return topVisualize(states[0], fss);
 }
