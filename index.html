@@ -118,22 +118,28 @@
         var currentHighlighter = null;
         
         const camera = initControls();
-        camera.image = testVisualize();
-        camera.draw();
+        let trackers = []
+        // camera.image = testVisualize();
+        // camera.draw();·
         //document.getElementById("targetFrame").contentWindow.postMessage((preprocess("let x = 5;\nlet y = 10;\n", ["x", "y"])), "*");
         window.addEventListener('message', event => {
-            states.push(event.data);
+            if (event.data === "done") {
+                setupVisualize(trackers, states);
+                drawState(0, camera);
+            } else {
+                states.push(event.data);
+            }
+            
         });
 
         document.getElementById("actionButton").onclick = () => {
-            let trackers = document.getElementById("trackers").value.split(",").map(tr => tr.trim());
+            trackers = document.getElementById("trackers").value.split(",").map(tr => tr.trim());
             submit(editor.getValue(), document.getElementById("targetFrame").contentWindow, trackers);
             states = [];
             stateNumber = -1;
             if (currentHighlighter !== null) {
                 editor.session.removeMarker(currentHighlighter);
             }
-            setupVisualize(trackers, states);
         };
 
         document.getElementById("backward").onclick = () => {
@@ -179,12 +185,13 @@
             <button class="nav-button" id="forward">Forward ▶</button>
         </header>
 
-        <pre id="editor">function foo(items) {
-            var i;
-            for (i = 0; i &lt; items.length; i++) {
-                alert("Ace Rocks " + items[i]);
-            }
-        }</pre>
+        <pre id="editor">
+let foo = {};
+let bar = {};
+foo[bar] = bar;
+let foobar = {};
+bar[foobar] = foobar;
+        </pre>
     
         <canvas tabindex="0"></canvas>
     
