@@ -7,19 +7,21 @@ export function preprocess(code: string, tracker: string[]): string {
     let statementCounter = 0;
     for (let i = 0; i < lines.length; i ++) {
         if (lines[i].match(';') != null) {
-            let occurrences = lines[i].split(';').length - 1;
-            statementsPerLine.push(occurrences);
-            for (let j = 0; j < occurrences; j ++) {
-                statementToLine.push(lineCounter);
-                statementCounter ++;
+            if (lines[i].indexOf('for') !== -1) {
+                statementsPerLine.push(0);
+            } else {
+                let occurrences = lines[i].split(';').length - 1;
+                statementsPerLine.push(occurrences);
+                for (let j = 0; j < occurrences; j ++) {
+                    statementToLine.push(lineCounter);
+                    statementCounter ++;
+                }
             }
         } else {
             statementsPerLine.push(0);
         }
         lineCounter ++;
     }
-
-    console.log(statementsPerLine);
 
     statementCounter = 0;    
 
@@ -38,13 +40,12 @@ export function preprocess(code: string, tracker: string[]): string {
     let funcDef: string = `
     function getValuesIfPresent(funkyCoolLineNumber) {
         let values = ["${tracker.join("\", \"")}"];
-        let returnObject = {funkyCoolLineNumber: funkyCoolLineNumber};
+        let returnObject = {funkyCoolLineNumber: funkyCoolLineNumber, reallyCoolConsoleLogs: reallyCoolConsoleLogs};
 
         for (let v of values) {
             try {
                 returnObject[v] = eval(v);
             } catch(error) {
-                console.log(error);
             }
         }
 
