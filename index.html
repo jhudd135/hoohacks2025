@@ -84,6 +84,12 @@
         margin-right: auto;
         font-family: monospace;
     }
+
+    .myMarker {
+        position: absolute;
+        background: rgba(255, 255, 0, 0.603); /* Yellow highlight */
+        z-index: 4;
+    }
   </style>
   <script type="module">
     import { Canvas } from "./build/render.js";
@@ -95,18 +101,57 @@
     var CANVAS;
     var states = [];
     window.onload = () => {
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/twilight");
+        editor.session.setMode("ace/mode/javascript");
+        editor.setOption("fontSize", 20);
+
+        var stateNumber = -2;
+        var Range = ace.require("ace/range").Range;
+        var currentHighlighter = null;
+        
         const camera = initControls();
         camera.image = testVisualize();
         camera.draw();
         //document.getElementById("targetFrame").contentWindow.postMessage((preprocess("let x = 5;\nlet y = 10;\n", ["x", "y"])), "*");
         window.addEventListener('message', event => {
             states.push(event.data);
-            setConsoleText(states[0].reallyCoolConsoleLogs);
         });
 
         document.getElementById("actionButton").onclick = () => {
             submit(editor.getValue(), document.getElementById("targetFrame").contentWindow, ["foo", "bar"]);
+            states = [];
+            stateNumber = -1;
+            if (currentHighlighter !== null) {
+                editor.session.removeMarker(currentHighlighter);
+            }
         };
+
+        document.getElementById("backward").onclick = () => {
+            if (stateNumber !== -2) {
+                if (stateNumber > 0) {
+                    stateNumber --;
+                    setConsoleText(states[stateNumber].reallyCoolConsoleLogs);
+                    if (currentHighlighter !== null) {
+                        editor.session.removeMarker(currentHighlighter);
+                    }
+                    currentHighlighter = editor.session.addMarker(new Range(states[stateNumber].funkyCoolLineNumber-1,0,states[stateNumber].funkyCoolLineNumber-1, 1), "myMarker", "fullLine");
+                }
+            }
+        };
+
+        document.getElementById("forward").onclick = () => {
+            if (stateNumber !== -2) {
+                if (stateNumber < states.length - 1) {
+                stateNumber ++;
+                setConsoleText(states[stateNumber].reallyCoolConsoleLogs);
+                if (currentHighlighter !== null) {
+                    editor.session.removeMarker(currentHighlighter);
+                }
+                currentHighlighter = editor.session.addMarker(new Range(states[stateNumber].funkyCoolLineNumber-1,0,states[stateNumber].funkyCoolLineNumber-1, 1), "myMarker", "fullLine");
+            }
+            }
+        }
     }
   </script>
 </head>
@@ -116,9 +161,10 @@
     <div class="container">
         <header class="header">
             <h2>Dissector</h2>
-            <button class="nav-button">◀ Back</button>
+            <button class="nav-button" id="actionButton">debug</button>
+            <button class="nav-button" id="backward">◀ Back</button>
             <!-- <img src="logo.png" alt="Website Logo" class="logo"> -->
-            <button class="nav-button">Forward ▶</button>
+            <button class="nav-button" id="forward">Forward ▶</button>
         </header>
 
         <pre id="editor">function foo(items) {
@@ -130,19 +176,14 @@
     
         <canvas tabindex="0"></canvas>
     
-        <div class="consoleOutput" id="consoleOutput">
-            <button id="actionButton">debug</button>
-        </div>
+        <div class="consoleOutput" id="consoleOutput"></div>
     </div>
     
 </main>
 
 <script src="node_modules/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script>
-    var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/twilight");
-    editor.session.setMode("ace/mode/javascript");
-    editor.setOption("fontSize", 20);
+    
 </script>
 
 </body>
