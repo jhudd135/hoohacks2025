@@ -1,33 +1,40 @@
 import { testCamera } from "./camera.ts";
 import { Cartesian } from "./coordinates.ts";
 
-let panStart: [number, number];
+let panMousePrev: Cartesian;
 let panning: boolean;
 
 export function initControls() {
-    let camera = testCamera();
+    const camera = testCamera();
+    const currentRealMousePos: (ev: MouseEvent) => Cartesian = (ev: MouseEvent) => {
+        return camera.canvasToReal(new Cartesian(
+            ev.clientX - camera.canvas.canvas.getBoundingClientRect().left, 
+            ev.clientY - camera.canvas.canvas.getBoundingClientRect().top
+        ));
+    }
     camera.canvas.canvas.addEventListener("mousedown", (ev: MouseEvent) => {
-        panStart = [ev.clientX, ev.clientY];
+        panMousePrev = currentRealMousePos(ev);
         panning = true;
     });
     camera.canvas.canvas.addEventListener("mousemove", (ev: MouseEvent) => {
         if (panning) {
-            camera.draw(new Cartesian(ev.clientX - panStart[0], ev.clientY - panStart[1]));
+            let panMouseCur = currentRealMousePos(ev);
+            camera.position = camera.position.transform(panMousePrev.transform(panMouseCur.scale(-1)));
+            camera.draw();
         }
     });
-    camera.canvas.canvas.addEventListener("keydown", (ev: KeyboardEvent) => {
-        if (ev.key == "-") {
-            camera.height *= 1.25;
+    camera.canvas.canvas.addEventListener("wheel", (ev: WheelEvent) => {
+        if (ev.deltaY < 0) {
+            camera.height *= 0.9;
             camera.draw();
-        } else if (ev.key == "=") {
-            camera.height *= 0.8;
+        } else {
+            camera.height *= 1.1111111111111111111111;
             camera.draw();
         }
     });
     window.addEventListener("mouseup", (ev: MouseEvent) => {
         if (panning) {
             panning = false;
-            camera.position = camera.position.transform(new Cartesian(panStart[0] - ev.clientX, panStart[1] - ev.clientY));
             camera.draw();
         }
     });

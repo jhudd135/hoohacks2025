@@ -41,7 +41,6 @@ class Camera {
         const radius = [this.canvas.width / 2, this.canvas.height / 2];
         this.apertureAngles = [Math.atan(radius[0] / this.height), Math.atan(radius[1] / this.height)];
         this.position = new Cartesian(0, 0);
-        console.log(this.adjustedRadius(0));
     }
     adjustedRadius(distance: number): [number, number] {
         return [(this.height + distance) * Math.tan(this.apertureAngles[0]), (this.height + distance) * Math.tan(this.apertureAngles[1])];
@@ -53,6 +52,15 @@ class Camera {
         return new Cartesian(
             ((coords.x - horMin) / (2 * adjustedRadius[0])) * this.canvas.width,
             ((coords.y - verMin) / (2 * adjustedRadius[1])) * this.canvas.height
+        );
+    }
+    canvasToReal(coords: Cartesian, cameraPosOverride: Cartesian = null): Cartesian {
+        const pos = cameraPosOverride == null ? this.position : cameraPosOverride;
+        const adjustedRadius = this.adjustedRadius(0);
+        const horMin = pos.x - adjustedRadius[0], verMin = pos.y - adjustedRadius[1];
+        return new Cartesian(
+            (coords.x / this.canvas.width) * (2 * adjustedRadius[0]) + horMin,
+            (coords.y / this.canvas.height) * (2 * adjustedRadius[1]) + verMin
         );
     }
     image: Drawable[];
