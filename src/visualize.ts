@@ -15,21 +15,21 @@ function getInitialPlacements(tracked: string[], states: Object[]): Map<string, 
             if (entry[1] instanceof Object) {
                 const drawables = visualize(entry[1], new Cartesian(0, 0), new Set());
                 const box = boundingBox(drawables);
-                // console.log("gIP forfor drawables", drawables, "box", box);
+                console.log("gIP forfor drawables", drawables, "box", box);
                 boundingStates.get(entry[0]).push(new Arrow(box[0],  box[1]));
             } else {
                 boundingStates.get(entry[0]).push(new Circle(new Cartesian(0, 0), 0));
             }
         }
     }
-    // console.log("gIP boundingStates", boundingStates);
+    console.log("gIP boundingStates", boundingStates);
     const trackedBounds = new Map(Array.from(boundingStates.entries()).map(entry => [entry[0], boundingBox(entry[1])]));
-    // console.log("gIP trackedBounds", trackedBounds);
+    console.log("gIP trackedBounds", trackedBounds);
     const trackedStarts: Map<string, Cartesian> = new Map();
     let currentStart = new Cartesian(0, 0);
     for (let entry of trackedBounds) {
         trackedStarts.set(entry[0], currentStart);
-        // console.log("gIP", entry[0]);
+        console.log("gIP", entry[0]);
         currentStart = currentStart.transform(0, entry[1][1].y - entry[1][0].y + DISTANCE);
     }
     return trackedStarts;
@@ -120,6 +120,7 @@ function testObj2() {
     foo["bar"] = bar;
     let foobar = {};
     bar["foobar"] = foobar;
+    return foo;
 }
 
 function topVisualize(topObj: Object, fullySpacedStarts: Map<string, Cartesian>) {
@@ -141,8 +142,9 @@ function topVisualize(topObj: Object, fullySpacedStarts: Map<string, Cartesian>)
 }
 
 export function testVisualize() {
-    const states = [{bewc: testObj(), hudd: {a: 1, b: "hello", c: {d: {}, e: {}}}, d: {}}];
-    const tracked = ["bewc", "hudd", "d"];
+    // const states = [{bewc: testObj(), hudd: {a: 1, b: "hello", c: {d: {}, e: {}}}, d: {}}];
+    const states = [testObj2()];
+    const tracked = ["foo", "bar"];
     const fss = getInitialPlacements(tracked, states);
     console.log("fss", fss);
     return topVisualize(states[0], fss);
