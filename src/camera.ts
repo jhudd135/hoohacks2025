@@ -8,30 +8,30 @@ export interface Drawable {
 }
 
 export class Circle implements Drawable {
-    constructor(public center: Cartesian, public radius: number) {}
+    constructor(public center: Cartesian, public radius: number, public color: string) {}
     draw(pointMapper: (point: Cartesian) => Cartesian, canvas: Canvas) {
         let transEdge = pointMapper(this.center.transform([this.radius, 0]));
         let transCenter = pointMapper(this.center);
         let transRadius = transEdge.x - transCenter.x;
-        canvas.drawCircle(transCenter.arr, transRadius);
+        canvas.drawCircle(transCenter.arr, transRadius, this.color);
     }
 }
 export class Arrow implements Drawable {
-    constructor(public tail: Cartesian, public head: Cartesian) {}
+    constructor(public tail: Cartesian, public head: Cartesian, public color: string) {}
     draw(pointMapper: (point: Cartesian) => Cartesian, canvas: Canvas) {
-        canvas.drawLine(pointMapper(this.tail).arr, pointMapper(this.head).arr);
+        canvas.drawLine(pointMapper(this.tail).arr, pointMapper(this.head).arr, this.color);
         const backAngle = this.tail.transform(this.head.scale(-1)).polar().angle;
-        canvas.drawLine(pointMapper(this.head).arr, pointMapper(this.head.transform(new Polar(backAngle, 15).rotate(Math.PI / 4).cartesian())).arr);
-        canvas.drawLine(pointMapper(this.head).arr, pointMapper(this.head.transform(new Polar(backAngle, 15).rotate(-Math.PI / 4).cartesian())).arr);
+        canvas.drawLine(pointMapper(this.head).arr, pointMapper(this.head.transform(new Polar(backAngle, 15).rotate(Math.PI / 4).cartesian())).arr, this.color);
+        canvas.drawLine(pointMapper(this.head).arr, pointMapper(this.head.transform(new Polar(backAngle, 15).rotate(-Math.PI / 4).cartesian())).arr, this.color);
     }
 }
 export class DText implements Drawable {
-    constructor(public bottomleft: Cartesian, public text: string, public rotation: number = null) {}
+    constructor(public bottomleft: Cartesian, public text: string, public rotation: number, public color: string) {}
     draw(pointMapper: (point: Cartesian) => Cartesian, canvas: Canvas) {
         let transTopLeft = pointMapper(this.bottomleft.transform([0, -FONTSIZE]));
         let transBottomLeft = pointMapper(this.bottomleft)
         let transHeight = transBottomLeft.y - transTopLeft.y;
-        canvas.drawText(pointMapper(this.bottomleft).arr, this.text, transHeight + "px Arial", this.rotation);
+        canvas.drawText(pointMapper(this.bottomleft).arr, this.text, transHeight + "px Arial", this.rotation, this.color);
     }
 }
 
@@ -81,13 +81,13 @@ export function processCanvas(htmlCanvas: HTMLCanvasElement) {
     return new Canvas(htmlCanvas);
 }
 
-export function testCamera(): Camera {
+export function setupCamera(): Camera {
     let canvas = processCanvas(document.getElementsByTagName("canvas")[0]);
     let camera = new Camera(canvas, 500);
     camera.image = [
-        new Circle(new Cartesian(0, 0), 50),
-        new Arrow(new Cartesian(50, 0), new Cartesian(150, 0)),
-        new DText(new Cartesian(150, 10), "Greeting fellow nerds")
+        // new Circle(new Cartesian(0, 0), 50),
+        // new Arrow(new Cartesian(50, 0), new Cartesian(150, 0)),
+        // new DText(new Cartesian(150, 10), "Greeting fellow nerds")
     ]
     camera.draw();
     return camera;

@@ -1,11 +1,11 @@
-import { testCamera } from "./camera.ts";
+import { setupCamera } from "./camera.ts";
 import { Cartesian } from "./coordinates.ts";
 
 let panMousePrev: Cartesian;
 let panning: boolean;
 
 export function initControls() {
-    const camera = testCamera();
+    const camera = setupCamera();
     const currentRealMousePos: (ev: MouseEvent) => Cartesian = (ev: MouseEvent) => {
         return camera.canvasToReal(new Cartesian(
             ev.clientX - camera.canvas.canvas.getBoundingClientRect().left, 

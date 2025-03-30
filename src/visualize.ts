@@ -17,9 +17,9 @@ function getInitialPlacements(tracked: string[], states: Object[]): Map<string, 
                 const drawables = visualize(entry[1], new Cartesian(0, 0), new Set());
                 const box = boundingBox(drawables);
                 // console.log("gIP forfor drawables", drawables, "box", box);
-                boundingStates.get(entry[0]).push(new Arrow(box[0],  box[1]));
+                boundingStates.get(entry[0]).push(new Arrow(box[0],  box[1], "black"));
             } else {
-                boundingStates.get(entry[0]).push(new Circle(new Cartesian(0, 0), 0));
+                boundingStates.get(entry[0]).push(new Circle(new Cartesian(0, 0), 0, "black"));
             }
         }
     }
@@ -67,14 +67,15 @@ function boundingBox(items: Drawable[]): [Cartesian, Cartesian] {
     return result;
 }
 
-function ccArrow(tail: Cartesian, head: Cartesian, text: string = null): Drawable[] {
+function ccArrow(tail: Cartesian, head: Cartesian, text: string = null, color: string): Drawable[] {
     const forwardAngle = head.transform(tail.scale(-1)).polar().angle;
     const result: Drawable[] = [new Arrow(
         tail.transform((new Polar(forwardAngle, RADIUS)).cartesian()),
-        head.transform((new Polar(forwardAngle, RADIUS)).scale(-1).cartesian())
+        head.transform((new Polar(forwardAngle, RADIUS)).scale(-1).cartesian()),
+        color
     )];
     if (text !== null) {
-        result.push(new DText((result[0] as Arrow).tail.transform((new Polar(forwardAngle, SCALE)).cartesian()), text, forwardAngle));
+        result.push(new DText((result[0] as Arrow).tail.transform((new Polar(forwardAngle, SCALE)).cartesian()), text, forwardAngle, color));
     }
     return result;
 }
@@ -86,11 +87,11 @@ function visualize(obj: Object, start: Cartesian, seen: Set<Object>): Drawable[]
     }
     seen.add(obj);
     const result: Drawable[] = [];
-    result.push(new Circle(start, RADIUS));
+    result.push(new Circle(start, RADIUS, "black"));
     let nextStart: Cartesian = start.transform([DISTANCE, 0]);
     Object.entries(obj).forEach((entry, i) => {
         if (entry[1] instanceof Object) {
-            result.push(...ccArrow(start, nextStart, entry[0]));
+            result.push(...ccArrow(start, nextStart, entry[0], "black"));
             // result.push(new DText(nextStart.transform(-RADIUS + SCALE, 0), entry[0]));
             const drawables = visualize(entry[1], nextStart, seen);
             const box = boundingBox(drawables);
@@ -132,7 +133,7 @@ function topVisualize(topObj: Object, fullySpacedStarts: Map<string, Cartesian>)
     for (let item of Object.entries(topObj)) {
         if (item[1] as Object instanceof Object) {
             const start = fullySpacedStarts.get(item[0]);
-            result.push(new DText(start.transform(-RADIUS + SCALE, 0), item[0]));
+            result.push(new DText(start.transform(-RADIUS + SCALE, 0), item[0], 0, "black"));
             const drawables = visualize(item[1], start, seen);
             const box = boundingBox(drawables);
             // start = new Cartesian(0, (!box ? 0 : box[1].y) + DISTANCE);
@@ -148,16 +149,30 @@ export function testVisualize() {
     const tracked = ["foo", "bar"];
     const fss = getInitialPlacements(tracked, states);
     console.log("fss", fss);
-    return topVisualize(states[0], fss);
+    // return topVisualize(states[0], fss);
 }
 
 let visualizations: Drawable[][];
+
+function flattenObj(obj: Object): Set<Object> {
+    const result: Set<Object> = new Set();
+    for (let val of Object.values(obj)) {
+        if (val instanceof Object) {
+            result.add(val)
+            flattenObj(val).forEach(o => {
+                result.add(o);
+            });
+        }
+    }
+    return result;
+} 
 
 export function setupVisualize(tracked: string[], states: Object[]) {
     console.log("tracked", tracked);
     const prunedStates = states.map(state => Object.fromEntries(Object.entries(state).filter(entry => tracked.includes(entry[0]))));
     const fullySpacedStarts = getInitialPlacements(tracked, prunedStates);
     visualizations = [];
+    let prevObjs: Set<Object> = new Set();
     prunedStates.forEach((state, i) => {
         visualizations.push(topVisualize(state, fullySpacedStarts));
     });
