@@ -38,16 +38,19 @@ function boundingBox(items: Drawable[]): [Cartesian, Cartesian] {
     return result;
 }
 
-function ccArrow(tail: Cartesian, head: Cartesian) {
+function ccArrow(tail: Cartesian, head: Cartesian, text: string = null): Drawable[] {
     const forwardAngle = head.transform(tail.scale(-1)).polar().angle;
-    return new Arrow(
+    const result: Drawable[] = [new Arrow(
         tail.transform((new Polar(forwardAngle, RADIUS)).cartesian()),
         head.transform((new Polar(forwardAngle, RADIUS)).scale(-1).cartesian())
-    );
+    )];
+    if (text !== null) {
+        result.push(new DText((result[0] as Arrow).tail.transform((new Polar(forwardAngle, SCALE)).cartesian()), text, forwardAngle));
+    }
+    return result;
 }
 
 function visualize(obj: Object, start: Cartesian, seen: Set<Object>): Drawable[] {
-    console.log(start.toString(), obj);
     if (seen.has(obj)) {
         console.log("circular reference!!!!", obj);
         return [];
@@ -58,13 +61,15 @@ function visualize(obj: Object, start: Cartesian, seen: Set<Object>): Drawable[]
     let nextStart: Cartesian = start.transform([DISTANCE, 0]);
     Object.entries(obj).forEach((entry, i) => {
         if (entry[1] instanceof Object) {
-            result.push(ccArrow(start, nextStart));
-            result.push(new DText(nextStart.transform(-RADIUS + SCALE, 0), entry[0]));
+            result.push(...ccArrow(start, nextStart, entry[0]));
+            // result.push(new DText(nextStart.transform(-RADIUS + SCALE, 0), entry[0]));
             const drawables = visualize(entry[1], nextStart, seen);
             const box = boundingBox(drawables);
-            if (entry[0] === "d")
-            nextStart = nextStart.transform(0, (!box ? 0 : box[1].y) + DISTANCE);
-            result.splice(result.length, 0, ...drawables);
+            nextStart = new Cartesian(nextStart.x, (!box ? 0 : box[1].y) + DISTANCE);
+            if (entry[0] === "d") {
+                console.log("dbox", box, "dnstart", nextStart);
+            }
+            result.push(...drawables);
         }
     });
     return result;
@@ -94,8 +99,8 @@ export function testVisualize() {
             result.push(new DText(start.transform(-RADIUS + SCALE, 0), item[0]));
             const drawables = visualize(item[1], start, seen);
             const box = boundingBox(drawables);
-            start = start.transform(0, (!box ? 0 : box[1].y) + DISTANCE);
-            result.splice(result.length, 0, ...drawables);
+            start = new Cartesian(0, (!box ? 0 : box[1].y) + DISTANCE);
+            result.push(...drawables);
         }
     }
     console.log(result);

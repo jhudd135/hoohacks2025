@@ -26,12 +26,12 @@ export class Arrow implements Drawable {
     }
 }
 export class DText implements Drawable {
-    constructor(public bottomleft: Cartesian, public text: string) {}
+    constructor(public bottomleft: Cartesian, public text: string, public rotation: number = null) {}
     draw(pointMapper: (point: Cartesian) => Cartesian, canvas: Canvas) {
         let transTopLeft = pointMapper(this.bottomleft.transform([0, -FONTSIZE]));
         let transBottomLeft = pointMapper(this.bottomleft)
         let transHeight = transBottomLeft.y - transTopLeft.y;
-        canvas.drawText(pointMapper(this.bottomleft).arr, this.text, transHeight + "px Arial");
+        canvas.drawText(pointMapper(this.bottomleft).arr, this.text, transHeight + "px Arial", this.rotation);
     }
 }
 
