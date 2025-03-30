@@ -122,10 +122,13 @@
         // camera.image = testVisualize();
         // camera.draw();·
         //document.getElementById("targetFrame").contentWindow.postMessage((preprocess("let x = 5;\nlet y = 10;\n", ["x", "y"])), "*");
+
+        const forwardButton = document.getElementById("forward");
+
         window.addEventListener('message', event => {
             if (event.data === "done") {
                 setupVisualize(trackers, states);
-                drawState(0, camera);
+                setConsoleText(["Use the next button to start stepping throught the code execution!"]);
             } else {
                 states.push(event.data);
             }
@@ -156,7 +159,7 @@
             }
         };
 
-        document.getElementById("forward").onclick = () => {
+        forwardButton.onclick = () => {
             if (stateNumber !== -2) {
                 if (stateNumber < states.length - 1) {
                 stateNumber ++;
