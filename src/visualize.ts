@@ -9,22 +9,27 @@ const DISTANCE = 10 * SCALE;
 const RADIUS = 2.5 * SCALE;
 
 function getInitialPlacements(tracked: string[], states: Object[]): Map<string, Cartesian> {
-    const boudingStates: Map<string, Drawable[]> = new Map(tracked.map(s => [s, []]));
+    const boundingStates: Map<string, Drawable[]> = new Map(tracked.map(s => [s, []]));
     for (let state of states) {
         for (let entry of Object.entries(state)) {
             if (entry[1] instanceof Object) {
-                const box = boundingBox(visualize(entry[1], new Cartesian(0, 0), new Set()));
-                boudingStates.get(entry[0]).push(new Arrow(box[0],  box[1]));
+                const drawables = visualize(entry[1], new Cartesian(0, 0), new Set());
+                const box = boundingBox(drawables);
+                console.log("gIP forfor drawables", drawables, "box", box);
+                boundingStates.get(entry[0]).push(new Arrow(box[0],  box[1]));
             } else {
-                boudingStates.get(entry[0]).push(new Circle(new Cartesian(0, 0), 0));
+                boundingStates.get(entry[0]).push(new Circle(new Cartesian(0, 0), 0));
             }
         }
     }
-    const trackedBounds = new Map(Array.from(boudingStates.entries()).map(entry => [entry[0], boundingBox(entry[1])]));
+    console.log("gIP boundingStates", boundingStates);
+    const trackedBounds = new Map(Array.from(boundingStates.entries()).map(entry => [entry[0], boundingBox(entry[1])]));
+    console.log("gIP trackedBounds", trackedBounds);
     const trackedStarts: Map<string, Cartesian> = new Map();
     let currentStart = new Cartesian(0, 0);
     for (let entry of trackedBounds) {
         trackedStarts.set(entry[0], currentStart);
+        console.log("gIP", entry[0]);
         currentStart = currentStart.transform(0, entry[1][1].y - entry[1][0].y + DISTANCE);
     }
     return trackedStarts;
@@ -32,6 +37,7 @@ function getInitialPlacements(tracked: string[], states: Object[]): Map<string, 
 
 function boundingBox(items: Drawable[]): [Cartesian, Cartesian] {
     if (!items) {
+        console.log("no items!");
         return null;
     }
     const getBounds: (d: Drawable) => [Cartesian, Cartesian] = (d: Drawable) => {
@@ -127,8 +133,9 @@ function topVisualize(topObj: Object, fullySpacedStarts: Map<string, Cartesian>)
 }
 
 export function testVisualize() {
-    const states = [{bewc: testObj(), hudd: {a: 1, b: "hello", c: {d: {}, e: {}}}}];
-    const tracked = ["bewc", "hudd"];
+    const states = [{bewc: testObj(), hudd: {a: 1, b: "hello", c: {d: {}, e: {}}}, d: {}}];
+    const tracked = ["bewc", "hudd", "d"];
     const fss = getInitialPlacements(tracked, states);
+    console.log("fss", fss);
     return topVisualize(states[0], fss);
 }
