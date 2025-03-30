@@ -38,5 +38,6 @@ export function initControls() {
             camera.draw();
         }
     });
+    return camera;
 }
 

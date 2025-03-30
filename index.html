@@ -28,10 +28,13 @@
   </style>
   <script type="module">
     import { Canvas } from "./build/render.js";
-    import { initControls } from "./build/controls.js"
+    import { initControls } from "./build/controls.js";
+    import { testVisualize } from "./build/visualize.js";
     var CANVAS;
     window.onload = () => {
-        initControls();
+        const camera = initControls();
+        camera.image = testVisualize();
+        camera.draw();
     }
   </script>
 </head>

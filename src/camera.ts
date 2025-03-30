@@ -1,13 +1,13 @@
 import { Canvas } from "./render.ts";
-import { Cartesian } from "./coordinates.ts";
+import { Cartesian, Polar } from "./coordinates.ts";
 
 const FONTSIZE = 10;
 
-interface Drawable {
+export interface Drawable {
     draw(pointMapper: (point: Cartesian) => Cartesian, canvas: Canvas);
 }
 
-class Circle implements Drawable {
+export class Circle implements Drawable {
     constructor(public center: Cartesian, public radius: number) {}
     draw(pointMapper: (point: Cartesian) => Cartesian, canvas: Canvas) {
         let transEdge = pointMapper(this.center.transform([this.radius, 0]));
@@ -16,13 +16,16 @@ class Circle implements Drawable {
         canvas.drawCircle(transCenter.arr, transRadius);
     }
 }
-class Arrow implements Drawable {
+export class Arrow implements Drawable {
     constructor(public tail: Cartesian, public head: Cartesian) {}
     draw(pointMapper: (point: Cartesian) => Cartesian, canvas: Canvas) {
         canvas.drawLine(pointMapper(this.tail).arr, pointMapper(this.head).arr);
+        const backAngle = this.tail.transform(this.head.scale(-1)).polar().angle;
+        canvas.drawLine(pointMapper(this.head).arr, pointMapper(this.head.transform(new Polar(backAngle, 15).rotate(Math.PI / 4).cartesian())).arr);
+        canvas.drawLine(pointMapper(this.head).arr, pointMapper(this.head.transform(new Polar(backAngle, 15).rotate(-Math.PI / 4).cartesian())).arr);
     }
 }
-class DText implements Drawable {
+export class DText implements Drawable {
     constructor(public bottomleft: Cartesian, public text: string) {}
     draw(pointMapper: (point: Cartesian) => Cartesian, canvas: Canvas) {
         let transTopLeft = pointMapper(this.bottomleft.transform([0, -FONTSIZE]));
@@ -82,9 +85,9 @@ export function testCamera(): Camera {
     let canvas = processCanvas(document.getElementsByTagName("canvas")[0]);
     let camera = new Camera(canvas, 500);
     camera.image = [
-        new Circle(new Cartesian(100, 100), 100),
-        new Arrow(new Cartesian(200, 200), new Cartesian(300, 300)),
-        new DText(new Cartesian(300, 310), "greeting fellow nerds")
+        new Circle(new Cartesian(0, 0), 50),
+        new Arrow(new Cartesian(50, 0), new Cartesian(150, 0)),
+        new DText(new Cartesian(150, 10), "Greeting fellow nerds")
     ]
     camera.draw();
     return camera;
