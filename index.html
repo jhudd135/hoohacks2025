@@ -30,11 +30,21 @@
     import { Canvas } from "./build/render.js";
     import { initControls } from "./build/controls.js";
     import { testVisualize } from "./build/visualize.js";
+    import { preprocess } from "./build/preprocessing.js"
+    import { submit } from "./build/submit.js"
     var CANVAS;
     window.onload = () => {
         const camera = initControls();
         camera.image = testVisualize();
         camera.draw();
+        //document.getElementById("targetFrame").contentWindow.postMessage((preprocess("let x = 5;\nlet y = 10;\n", ["x", "y"])), "*");
+        window.addEventListener('message', event => {
+            console.log(event.data);
+        });
+
+        document.getElementById("actionButton").onclick = () => {
+            submit(editor.getValue(), document.getElementById("targetFrame").contentWindow, ["foo", "bar"]);
+        };
     }
   </script>
 </head>
@@ -49,6 +59,8 @@
     }</pre>
     
     <canvas tabindex="0"></canvas>
+
+    <button id="actionButton">Debug</button>
     
 </main>
 
@@ -61,4 +73,6 @@
 </script>
 
 </body>
+
+<iframe sandbox='allow-scripts' id='targetFrame' src='./iframePage.html' style="display:none"></iframe>
 </html>
