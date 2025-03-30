@@ -29,7 +29,7 @@
     }
 
     #editor {
-        grid-row: 2/4;
+        grid-row: 2;
         grid-column: 1;
         margin: 0;
     }
@@ -66,7 +66,7 @@
 
     .consoleOutput {
         grid-row: 3;
-        grid-column: 2;
+        grid-column: 1;
         background: black;
         color: lime;
         font-family: monospace;
@@ -97,6 +97,11 @@
         font-family: monospace;
         border: none;
     }
+
+    .primitives {
+        grid-row: 3;
+        grid-column: 2;
+    }
   </style>
   <script type="module">
     import { Canvas } from "./build/render.js";
@@ -124,8 +129,8 @@
         //document.getElementById("targetFrame").contentWindow.postMessage((preprocess("let x = 5;\nlet y = 10;\n", ["x", "y"])), "*");
         window.addEventListener('message', event => {
             if (event.data === "done") {
-                setupVisualize(trackers, states);
-                drawState(0, camera);
+                setupVisualize(trackers, states, document.getElementById("primitives"));
+                //drawState(0, camera);
             } else {
                 states.push(event.data);
             }
@@ -196,6 +201,8 @@ bar[foobar] = foobar;
         <canvas tabindex="0"></canvas>
     
         <div class="consoleOutput" id="consoleOutput"></div>
+
+        <div class="primitives" id="primitives"></div>
     </div>
     
 </main>

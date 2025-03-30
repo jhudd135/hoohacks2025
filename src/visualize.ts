@@ -7,6 +7,7 @@ const trackingMap: Map<any, { name: string, location: Cartesian }> = new Map();
 const SCALE = 10;
 const DISTANCE = 10 * SCALE;
 const RADIUS = 2.5 * SCALE;
+var primitiveDisplay: HTMLElement;
 
 function getInitialPlacements(tracked: string[], states: Object[]): Map<string, Cartesian> {
     const boundingStates: Map<string, Drawable[]> = new Map(tracked.map(s => [s, []]));
@@ -128,7 +129,8 @@ function topVisualize(topObj: Object, fullySpacedStarts: Map<string, Cartesian>)
     // {a: 1, b: "hello", c: {d: {}, e: {}}}
     const result: Drawable[] = [];
     // let start = new Cartesian(0, 0);
-    const seen: Set<Object> = new Set()
+    const seen: Set<Object> = new Set();
+    let primitives: string = "";
     for (let item of Object.entries(topObj)) {
         if (item[1] as Object instanceof Object) {
             const start = fullySpacedStarts.get(item[0]);
@@ -137,8 +139,12 @@ function topVisualize(topObj: Object, fullySpacedStarts: Map<string, Cartesian>)
             const box = boundingBox(drawables);
             // start = new Cartesian(0, (!box ? 0 : box[1].y) + DISTANCE);
             result.push(...drawables);
+        } else {
+            primitives += `<span> ${item[0]}: ${item[1]} </span>\n`;
+            console.log(primitives);
         }
     }
+    primitiveDisplay.innerHTML = primitives;
     return result;
 }
 
@@ -153,7 +159,8 @@ export function testVisualize() {
 
 let visualizations: Drawable[][];
 
-export function setupVisualize(tracked: string[], states: Object[]) {
+export function setupVisualize(tracked: string[], states: Object[], displayField: HTMLElement) {
+    primitiveDisplay = displayField;
     console.log("tracked", tracked);
     const prunedStates = states.map(state => Object.fromEntries(Object.entries(state).filter(entry => tracked.includes(entry[0]))));
     const fullySpacedStarts = getInitialPlacements(tracked, prunedStates);
