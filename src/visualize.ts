@@ -142,7 +142,6 @@ function topVisualize(topObj: Object, fullySpacedStarts: Map<string, Cartesian>)
             result.push(...drawables);
         } else {
             primitives += `<span> ${item[0]}: ${item[1]} </span>\n`;
-            console.log(primitives);
         }
     }
     primitiveDisplay.innerHTML = primitives;
@@ -158,7 +157,8 @@ export function testVisualize() {
     // return topVisualize(states[0], fss);
 }
 
-let visualizations: Drawable[][];
+let allStates: Object[];
+let fullySpacedStarts: Map<string, Cartesian>;
 
 function flattenObj(obj: Object): Set<Object> {
     const result: Set<Object> = new Set();
@@ -173,18 +173,15 @@ function flattenObj(obj: Object): Set<Object> {
     return result;
 } 
 
-export function setupVisualize(tracked: string[], states: Object[]) {
+export function setupVisualize(tracked: string[], states: Object[], primitives) {
     console.log("tracked", tracked);
     const prunedStates = states.map(state => Object.fromEntries(Object.entries(state).filter(entry => tracked.includes(entry[0]))));
-    const fullySpacedStarts = getInitialPlacements(tracked, prunedStates);
-    visualizations = [];
-    let prevObjs: Set<Object> = new Set();
-    prunedStates.forEach((state, i) => {
-        visualizations.push(topVisualize(state, fullySpacedStarts));
-    });
+    fullySpacedStarts = getInitialPlacements(tracked, prunedStates);
+    allStates = prunedStates;
+    primitiveDisplay = primitives;
 }
 
 export function drawState(stateNumber: number, camera: Camera) {
-    camera.image = visualizations[stateNumber];
+    camera.image = topVisualize(allStates[stateNumber], fullySpacedStarts);
     camera.draw();
 }

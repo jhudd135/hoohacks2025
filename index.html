@@ -129,11 +129,14 @@
         //document.getElementById("targetFrame").contentWindow.postMessage((preprocess("let x = 5;\nlet y = 10;\n", ["x", "y"])), "*");
 
         const forwardButton = document.getElementById("forward");
+        const primitiveDisplay = document.getElementById("primitives");
 
         window.addEventListener('message', event => {
             if (event.data === "done") {
-                setupVisualize(trackers, states, document.getElementById("primitives"));
+                setupVisualize(trackers, states, primitiveDisplay);
                 setConsoleText(["Use the next button to start stepping throught the code execution!"]);
+                camera.image = [];
+                camera.draw();
             } else {
                 states.push(event.data);
             }
@@ -159,7 +162,7 @@
                         editor.session.removeMarker(currentHighlighter);
                     }
                     currentHighlighter = editor.session.addMarker(new Range(states[stateNumber].funkyCoolLineNumber-1,0,states[stateNumber].funkyCoolLineNumber-1, 1), "myMarker", "fullLine");
-                    drawState(stateNumber, camera);
+                    drawState(stateNumber, camera, primitiveDisplay);
                 }
             }
         };
@@ -173,7 +176,7 @@
                     editor.session.removeMarker(currentHighlighter);
                 }
                 currentHighlighter = editor.session.addMarker(new Range(states[stateNumber].funkyCoolLineNumber-1,0,states[stateNumber].funkyCoolLineNumber-1, 1), "myMarker", "fullLine");
-                drawState(stateNumber, camera);
+                drawState(stateNumber, camera, primitiveDisplay);
             }
             }
         }
